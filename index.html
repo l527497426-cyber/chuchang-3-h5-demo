@@ -517,6 +517,7 @@
         width 360ms var(--stage-curve),
         height 360ms var(--stage-curve),
         border-radius 360ms var(--stage-curve),
+        transform 360ms var(--stage-curve),
         opacity 220ms ease,
         filter 320ms ease,
         box-shadow 360ms var(--stage-curve),
@@ -574,7 +575,8 @@
       cursor: grabbing;
     }
 
-    .review-card.is-dragging {
+    .review-card.is-dragging,
+    .review-card.is-flipping {
       transition: none;
       will-change: translate;
     }
@@ -1637,12 +1639,40 @@
       });
     }
 
+    function getCurrentCardFrame() {
+      return {
+        left: parseFloat(reviewCard.style.left || (reviewCard.classList.contains('is-panel') ? panelSpec.left : cardSpec.left)),
+        top: parseFloat(reviewCard.style.top || (reviewCard.classList.contains('is-panel') ? panelSpec.top : cardSpec.top)),
+        width: parseFloat(reviewCard.style.width || (reviewCard.classList.contains('is-widget') ? widgetSpec.width : (reviewCard.classList.contains('is-panel') ? panelSpec.width : cardSpec.width))),
+        height: parseFloat(reviewCard.style.height || (reviewCard.classList.contains('is-widget') ? widgetSpec.height : (reviewCard.classList.contains('is-panel') ? panelSpec.height : cardSpec.height))),
+        radius: parseFloat(reviewCard.style.borderRadius || (reviewCard.classList.contains('is-widget') ? widgetSpec.radius : (reviewCard.classList.contains('is-panel') ? panelSpec.radius : cardSpec.radius))),
+      };
+    }
+
     function commitDraggedFrame(left, top) {
       reviewCard.classList.add('is-dragging');
       reviewCard.style.left = `${left}px`;
       reviewCard.style.top = `${top}px`;
       reviewCard.style.translate = '0 0';
       void reviewCard.offsetWidth;
+    }
+
+    function morphCardTo(targetFrame) {
+      const from = getCurrentCardFrame();
+      morphAnimation?.cancel();
+      reviewCard.classList.add('is-flipping');
+      applyCardFrame(targetFrame);
+      const deltaX = from.left - targetFrame.left;
+      const deltaY = from.top - targetFrame.top;
+      const scaleX = from.width / targetFrame.width;
+      const scaleY = from.height / targetFrame.height;
+      reviewCard.style.transformOrigin = 'top left';
+      reviewCard.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
+      void reviewCard.offsetWidth;
+      reviewCard.classList.remove('is-dragging', 'is-flipping');
+      requestAnimationFrame(() => {
+        reviewCard.style.transform = 'none';
+      });
     }
 
     function startMorphToWidget(side, top) {
@@ -1653,54 +1683,42 @@
       reviewCard.dataset.widgetSide = side;
       reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet', 'is-morphing-panel');
       reviewCard.classList.add('is-morphing-widget');
-      applyCardFrame({
+      morphCardTo({
         left: widgetLeft,
         top: widgetTop,
         width: widgetSpec.width,
         height: widgetSpec.height,
         radius: widgetSpec.radius,
       });
-      playMorphAnimation([
-        { transform: 'scale(1)', offset: 0 },
-        { transform: 'scale(0.965)', offset: 0.56 },
-        { transform: 'scale(1)', offset: 1 },
-      ], 360);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-morphing-widget');
         reviewCard.classList.add('is-widget');
+        reviewCard.style.transformOrigin = 'center center';
       }, widgetSpec.morphDelay);
     }
 
     function startMorphToSheet() {
       reviewCard.classList.remove('is-morphing-widget', 'is-morphing-panel');
       reviewCard.classList.add('is-morphing-sheet');
-      applyCardFrame(cardSpec);
-      playMorphAnimation([
-        { transform: 'scale(0.96)', offset: 0 },
-        { transform: 'scale(1.012)', offset: 0.58 },
-        { transform: 'scale(1)', offset: 1 },
-      ], 380);
+      morphCardTo(cardSpec);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet');
         widgetContent.classList.remove('is-left');
+        reviewCard.style.transformOrigin = 'center center';
       }, widgetSpec.morphDelay);
     }
 
     function startMorphToPanel() {
       reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet', 'is-morphing-widget');
       reviewCard.classList.add('is-morphing-panel');
-      applyCardFrame(panelSpec);
-      playMorphAnimation([
-        { transform: 'scale(1)', offset: 0 },
-        { transform: 'scale(1.012)', offset: 0.52 },
-        { transform: 'scale(1)', offset: 1 },
-      ], 360);
+      morphCardTo(panelSpec);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-morphing-panel');
         reviewCard.classList.add('is-panel');
+        reviewCard.style.transformOrigin = 'center center';
       }, widgetSpec.morphDelay);
     }
 
