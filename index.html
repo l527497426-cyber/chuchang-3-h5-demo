@@ -242,7 +242,7 @@
     .edge-glow {
       position: absolute;
       inset: 0;
-      overflow: hidden;
+      overflow: visible;
       pointer-events: none;
       z-index: 2;
       border-radius: inherit;
@@ -273,6 +273,44 @@
       inset: 0;
       border-radius: inherit;
       isolation: isolate;
+    }
+
+    .edge-glow-soft {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 920ms var(--entry-curve);
+    }
+
+    .edge-glow-soft-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      filter: blur(var(--soft-blur, 18px)) saturate(1.08);
+      opacity: var(--soft-opacity, 0.72);
+    }
+
+    .edge-glow-soft-layer--outer {
+      --soft-blur: 22px;
+      --soft-opacity: 0.74;
+      background:
+        linear-gradient(180deg, rgba(255, 227, 104, 0.72) 0%, rgba(255, 227, 104, 0.18) 16%, transparent 28%),
+        linear-gradient(0deg, rgba(220, 88, 225, 0.74) 0%, rgba(220, 88, 225, 0.18) 16%, transparent 28%),
+        linear-gradient(90deg, rgba(100, 232, 222, 0.7) 0%, rgba(100, 232, 222, 0.18) 14%, transparent 24%),
+        linear-gradient(270deg, rgba(255, 128, 50, 0.76) 0%, rgba(255, 128, 50, 0.2) 14%, transparent 24%);
+    }
+
+    .edge-glow-soft-layer--inner {
+      inset: 8px;
+      --soft-blur: 10px;
+      --soft-opacity: 0.52;
+      background:
+        linear-gradient(180deg, rgba(212, 229, 137, 0.62) 0%, transparent 18%),
+        linear-gradient(0deg, rgba(180, 118, 255, 0.62) 0%, transparent 18%),
+        linear-gradient(90deg, rgba(148, 200, 255, 0.58) 0%, transparent 14%),
+        linear-gradient(270deg, rgba(255, 70, 73, 0.58) 0%, transparent 14%);
     }
 
     .edge-glow-ring {
@@ -1094,6 +1132,13 @@
       animation: glow-entry 920ms var(--entry-curve) forwards;
     }
 
+    .demo-app.is-playing .edge-glow-soft,
+    .demo-app.is-finished .edge-glow-soft,
+    .demo-app.is-playing .edge-glow-fallback,
+    .demo-app.is-finished .edge-glow-fallback {
+      opacity: 1;
+    }
+
     .demo-app.is-playing .edge-glow-ring,
     .demo-app.is-finished .edge-glow-ring {
       opacity: 1;
@@ -1218,6 +1263,10 @@
             <img class="screen-bg" src="./assets/chuchang-3-bg.png" alt="短视频页面背景">
             <div class="screen-vignette"></div>
             <div class="edge-glow" aria-hidden="true">
+              <div class="edge-glow-soft">
+                <div class="edge-glow-soft-layer edge-glow-soft-layer--outer"></div>
+                <div class="edge-glow-soft-layer edge-glow-soft-layer--inner"></div>
+              </div>
               <div class="edge-glow-rings">
                 <div class="edge-glow-ring edge-glow-ring--l4"></div>
                 <div class="edge-glow-ring edge-glow-ring--l2"></div>
