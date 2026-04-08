@@ -1637,6 +1637,14 @@
       });
     }
 
+    function commitDraggedFrame(left, top) {
+      reviewCard.classList.add('is-dragging');
+      reviewCard.style.left = `${left}px`;
+      reviewCard.style.top = `${top}px`;
+      reviewCard.style.translate = '0 0';
+      void reviewCard.offsetWidth;
+    }
+
     function startMorphToWidget(side, top) {
       const widgetTop = clampWidgetTop(top);
       const widgetLeft = getWidgetLeft(side);
@@ -1778,9 +1786,7 @@
       const currentHeight = reviewCard.classList.contains('is-widget') ? widgetSpec.height : (reviewCard.classList.contains('is-panel') ? panelSpec.height : cardSpec.height);
       const localCenterX = currentLeft + currentWidth / 2;
       const localCenterY = currentTop + currentHeight / 2;
-      reviewCard.style.left = `${currentLeft}px`;
-      reviewCard.style.top = `${currentTop}px`;
-      reviewCard.style.translate = '0 0';
+      commitDraggedFrame(currentLeft, currentTop);
 
       if (dragState.mode === 'restore') {
         const inRestoreZone =
