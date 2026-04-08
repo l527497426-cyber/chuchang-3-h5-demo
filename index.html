@@ -254,36 +254,38 @@
       );
     }
 
-    .edge-glow-svg {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      display: block;
-      overflow: visible;
+    .edge-glow-rings {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      isolation: isolate;
     }
 
-    .edge-glow-stack {
+    .edge-glow-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      overflow: hidden;
       opacity: 0;
-      transition: opacity 920ms var(--entry-curve);
+      padding: var(--ring-width, 10px);
+      transition: opacity 920ms var(--entry-curve), filter 920ms var(--entry-curve);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      will-change: opacity, filter;
     }
 
-    .edge-glow-layer {
-      opacity: 1;
-    }
-
-    .edge-glow-color {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    .edge-glow-color::before {
+    .edge-glow-ring::before {
       content: "";
       position: absolute;
       left: 50%;
       top: 50%;
-      height: 200%;
+      width: 212%;
       aspect-ratio: 1 / 1;
       translate: -50% -50%;
       border-radius: 0;
@@ -307,85 +309,19 @@
       will-change: transform;
     }
 
-    .edge-glow-color--l4 {
-      mix-blend-mode: screen;
+    .edge-glow-ring--l4 {
+      --ring-width: 22px;
+      filter: blur(18px) brightness(1.16) saturate(1.18);
     }
 
-    @supports (mix-blend-mode: plus-lighter) {
-      .edge-glow-color--l4 {
-        mix-blend-mode: plus-lighter;
-      }
+    .edge-glow-ring--l2 {
+      --ring-width: 9px;
+      filter: blur(5px) brightness(1.14) saturate(1.08);
     }
 
-    .edge-glow-fo {
-      opacity: 0;
-      transform-origin: 50% 100%;
-    }
-
-    .figma-outline {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      border-radius: 32px;
-      opacity: 0;
-      padding: var(--ring-width, 14px);
-      transition: opacity 920ms var(--entry-curve);
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      will-change: opacity;
-    }
-
-    .figma-outline::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      height: 184%;
-      aspect-ratio: 1 / 1;
-      translate: -50% -50%;
-      border-radius: 0;
-      transform-origin: 50% 50%;
-      animation: glow-spin 6.4s linear infinite;
-      animation-play-state: var(--glow-motion-state, paused);
-      will-change: transform;
-    }
-
-    .figma-outline-main {
-      display: none;
-      opacity: 0;
-      --ring-width: 12px;
-      --glow-motion-state: paused;
-    }
-
-    .figma-outline-soft,
-    .figma-outline-core {
-      display: none;
-    }
-
-    .figma-outline-main::before {
-      background: conic-gradient(
-          from 0deg at 50% 50%,
-          #ff8032 0%,
-          #ff8032 10%,
-          #ffe368 20%,
-          #d4e589 30%,
-          #64e8de 42%,
-          #94c8ff 54%,
-          #9baaf8 62%,
-          #b476ff 74%,
-          #dc58e1 86%,
-          #ff4649 96%,
-          #ff8032 100%
-        );
-      filter: saturate(1.24) brightness(1.12) contrast(1.08);
-      animation-duration: 6.4s;
-    }
-
-    .figma-outline-core::before {
-      background: none;
+    .edge-glow-ring--main {
+      --ring-width: 14px;
+      filter: blur(10px) brightness(1.2) saturate(1.12);
     }
 
     .glow-seed {
@@ -457,13 +393,15 @@
       -webkit-user-select: none;
       -webkit-touch-callout: none;
       transition:
-        left 220ms var(--entry-curve),
-        top 220ms var(--entry-curve),
-        width 220ms var(--entry-curve),
-        height 220ms var(--entry-curve),
-        border-radius 220ms var(--entry-curve),
-        opacity 180ms ease,
-        filter 220ms ease;
+        left 320ms var(--stage-curve),
+        top 320ms var(--stage-curve),
+        width 360ms var(--stage-curve),
+        height 360ms var(--stage-curve),
+        border-radius 360ms var(--stage-curve),
+        opacity 220ms ease,
+        filter 320ms ease,
+        box-shadow 360ms var(--stage-curve),
+        background 320ms ease;
     }
 
     .review-card::before,
@@ -701,7 +639,8 @@
     }
 
     .review-card.is-morphing-widget,
-    .review-card.is-morphing-sheet {
+    .review-card.is-morphing-sheet,
+    .review-card.is-morphing-panel {
       pointer-events: none;
     }
 
@@ -725,6 +664,13 @@
     .review-card.is-morphing-widget::before,
     .review-card.is-morphing-widget::after {
       opacity: 0;
+    }
+
+    .review-card.is-morphing-widget {
+      box-shadow:
+        0 16px 30px rgba(10, 10, 14, 0.16),
+        0 0 0 1px rgba(255, 255, 255, 0.42);
+      filter: saturate(1.04);
     }
 
     .widget-content {
@@ -765,6 +711,13 @@
     .review-card.is-morphing-panel .panel-content {
       opacity: 1;
       transition-delay: 70ms;
+    }
+
+    .review-card.is-morphing-panel {
+      box-shadow:
+        0 18px 42px rgba(0, 0, 0, 0.18),
+        0 0 0 1px rgba(255, 255, 255, 0.3);
+      filter: saturate(1.02);
     }
 
     .review-card.is-morphing-panel .review-content {
@@ -923,6 +876,12 @@
       transition-duration: 260ms;
     }
 
+    .review-card.is-morphing-sheet {
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.17),
+        0 0 0 1px rgba(255, 255, 255, 0.28);
+    }
+
     .widget-handle {
       display: inline-flex;
       align-items: center;
@@ -1052,25 +1011,9 @@
       animation: glow-entry 920ms var(--entry-curve) forwards;
     }
 
-    .demo-app.is-playing .edge-glow-fo,
-    .demo-app.is-finished .edge-glow-fo {
+    .demo-app.is-playing .edge-glow-ring,
+    .demo-app.is-finished .edge-glow-ring {
       opacity: 1;
-    }
-
-    .demo-app.is-playing .edge-glow-stack,
-    .demo-app.is-finished .edge-glow-stack {
-      opacity: 1;
-    }
-
-    .demo-app.is-playing .figma-outline-main,
-    .demo-app.is-finished .figma-outline-main {
-      opacity: 1;
-      --glow-motion-state: running;
-    }
-
-    .demo-app.is-playing .figma-outline-core,
-    .demo-app.is-finished .figma-outline-core {
-      opacity: 0;
     }
 
     .demo-app.is-playing .ambient-trace,
@@ -1182,51 +1125,11 @@
             <img class="screen-bg" src="./assets/chuchang-3-bg.png" alt="短视频页面背景">
             <div class="screen-vignette"></div>
             <div class="edge-glow" aria-hidden="true">
-              <svg class="edge-glow-svg" viewBox="0 0 375 812" preserveAspectRatio="none">
-                <defs>
-                  <filter id="ringMaskL2Blur" x="-6%" y="-6%" width="112%" height="112%">
-                    <feGaussianBlur stdDeviation="3"></feGaussianBlur>
-                  </filter>
-                  <filter id="ringMaskL4Blur" x="-18%" y="-18%" width="136%" height="136%">
-                    <feGaussianBlur stdDeviation="16"></feGaussianBlur>
-                  </filter>
-                  <mask id="ringMaskL2" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="812">
-                    <rect x="0" y="0" width="375" height="812" rx="32" fill="white"></rect>
-                    <g filter="url(#ringMaskL2Blur)">
-                      <rect x="2" y="2" width="371" height="808" rx="34" fill="black"></rect>
-                    </g>
-                  </mask>
-                  <mask id="ringMaskL4" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="812">
-                    <rect x="0" y="0" width="375" height="812" rx="32" fill="white"></rect>
-                    <g filter="url(#ringMaskL4Blur)">
-                      <rect x="-2" y="-2" width="379" height="816" rx="34" fill="black"></rect>
-                    </g>
-                  </mask>
-                  <filter id="ringMaskMainBlur" x="-14%" y="-14%" width="128%" height="128%">
-                    <feGaussianBlur stdDeviation="11"></feGaussianBlur>
-                  </filter>
-                  <filter id="glowBlurMain" x="-14%" y="-14%" width="128%" height="128%">
-                    <feGaussianBlur stdDeviation="10"></feGaussianBlur>
-                  </filter>
-                  <mask id="ringMaskMain" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="812">
-                    <rect x="0" y="0" width="375" height="812" rx="32" fill="white"></rect>
-                    <g filter="url(#ringMaskMainBlur)">
-                      <rect x="13" y="13" width="349" height="786" rx="27" fill="black"></rect>
-                    </g>
-                  </mask>
-                </defs>
-                <g class="edge-glow-stack">
-                  <foreignObject class="edge-glow-layer edge-glow-layer--l4" x="0" y="0" width="375" height="812" mask="url(#ringMaskL4)">
-                    <div xmlns="http://www.w3.org/1999/xhtml" class="edge-glow-color edge-glow-color--l4"></div>
-                  </foreignObject>
-                  <foreignObject class="edge-glow-layer edge-glow-layer--l2" x="0" y="0" width="375" height="812" mask="url(#ringMaskL2)">
-                    <div xmlns="http://www.w3.org/1999/xhtml" class="edge-glow-color edge-glow-color--l2"></div>
-                  </foreignObject>
-                </g>
-                <foreignObject class="edge-glow-fo edge-glow-fo--main" x="0" y="0" width="375" height="812" mask="url(#ringMaskMain)" filter="url(#glowBlurMain)">
-                  <div xmlns="http://www.w3.org/1999/xhtml" class="figma-outline figma-outline-main"></div>
-                </foreignObject>
-              </svg>
+              <div class="edge-glow-rings">
+                <div class="edge-glow-ring edge-glow-ring--l4"></div>
+                <div class="edge-glow-ring edge-glow-ring--l2"></div>
+                <div class="edge-glow-ring edge-glow-ring--main"></div>
+              </div>
               <div class="glow-seed"></div>
             </div>
 
@@ -1445,6 +1348,7 @@
     const tracePaths = Array.from(document.querySelectorAll('.trace'));
     let finishTimer = null;
     let morphTimer = null;
+    let morphAnimation = null;
     let dragState = null;
 
     const cardSpec = {
@@ -1469,7 +1373,7 @@
       radius: 26,
       sideInset: 12,
       threshold: 0.56,
-      morphDelay: 160,
+      morphDelay: 210,
     };
 
     const panelThreshold = 86;
@@ -1525,6 +1429,15 @@
       reviewCard.style.filter = 'none';
     }
 
+    function playMorphAnimation(keyframes, duration = 320) {
+      morphAnimation?.cancel();
+      morphAnimation = reviewCard.animate(keyframes, {
+        duration,
+        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+        fill: 'none',
+      });
+    }
+
     function startMorphToWidget(side, top) {
       const widgetTop = clampWidgetTop(top);
       const widgetLeft = getWidgetLeft(side);
@@ -1540,6 +1453,11 @@
         height: widgetSpec.height,
         radius: widgetSpec.radius,
       });
+      playMorphAnimation([
+        { transform: 'scale(1)', offset: 0 },
+        { transform: 'scale(0.965)', offset: 0.56 },
+        { transform: 'scale(1)', offset: 1 },
+      ], 360);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-morphing-widget');
@@ -1551,6 +1469,11 @@
       reviewCard.classList.remove('is-morphing-widget', 'is-morphing-panel');
       reviewCard.classList.add('is-morphing-sheet');
       applyCardFrame(cardSpec);
+      playMorphAnimation([
+        { transform: 'scale(0.96)', offset: 0 },
+        { transform: 'scale(1.012)', offset: 0.58 },
+        { transform: 'scale(1)', offset: 1 },
+      ], 380);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet');
@@ -1562,6 +1485,11 @@
       reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet', 'is-morphing-widget');
       reviewCard.classList.add('is-morphing-panel');
       applyCardFrame(panelSpec);
+      playMorphAnimation([
+        { transform: 'scale(1)', offset: 0 },
+        { transform: 'scale(1.012)', offset: 0.52 },
+        { transform: 'scale(1)', offset: 1 },
+      ], 360);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-morphing-panel');
@@ -1599,6 +1527,7 @@
     function resetDemo() {
       window.clearTimeout(finishTimer);
       window.clearTimeout(morphTimer);
+      morphAnimation?.cancel();
       demoApp.classList.remove('is-started', 'is-playing', 'is-finished');
       resetDockState();
       tracePaths.forEach((path) => {
