@@ -242,7 +242,7 @@
     .edge-glow {
       position: absolute;
       inset: 0;
-      overflow: visible;
+      overflow: hidden;
       pointer-events: none;
       z-index: 2;
       border-radius: inherit;
@@ -268,127 +268,134 @@
       );
     }
 
-    .edge-glow-rings {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      isolation: isolate;
+    .edge-glow-svg {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
     }
 
-    .edge-glow-soft {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
+    .edge-glow-stack {
       opacity: 0;
-      pointer-events: none;
       transition: opacity 920ms var(--entry-curve);
     }
 
-    .edge-glow-soft-layer {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      filter: blur(var(--soft-blur, 18px)) saturate(1.08);
-      opacity: var(--soft-opacity, 0.72);
+    .edge-glow-layer {
+      opacity: 1;
     }
 
-    .edge-glow-soft-layer--outer {
-      --soft-blur: 22px;
-      --soft-opacity: 0.74;
-      background:
-        linear-gradient(180deg, rgba(255, 227, 104, 0.72) 0%, rgba(255, 227, 104, 0.18) 16%, transparent 28%),
-        linear-gradient(0deg, rgba(220, 88, 225, 0.74) 0%, rgba(220, 88, 225, 0.18) 16%, transparent 28%),
-        linear-gradient(90deg, rgba(100, 232, 222, 0.7) 0%, rgba(100, 232, 222, 0.18) 14%, transparent 24%),
-        linear-gradient(270deg, rgba(255, 128, 50, 0.76) 0%, rgba(255, 128, 50, 0.2) 14%, transparent 24%);
+    .edge-glow-color {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
-    .edge-glow-soft-layer--inner {
-      inset: 8px;
-      --soft-blur: 10px;
-      --soft-opacity: 0.52;
-      background:
-        linear-gradient(180deg, rgba(212, 229, 137, 0.62) 0%, transparent 18%),
-        linear-gradient(0deg, rgba(180, 118, 255, 0.62) 0%, transparent 18%),
-        linear-gradient(90deg, rgba(148, 200, 255, 0.58) 0%, transparent 14%),
-        linear-gradient(270deg, rgba(255, 70, 73, 0.58) 0%, transparent 14%);
-    }
-
-    .edge-glow-ring {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      opacity: 0;
-      padding: var(--ring-width, 10px);
-      transition: opacity 920ms var(--entry-curve), filter 920ms var(--entry-curve);
-      -webkit-mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
-      mask-composite: exclude;
-      will-change: opacity, filter;
-    }
-
-    .edge-glow-ring::before {
+    .edge-glow-color::before {
       content: "";
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 212%;
+      height: 200%;
       aspect-ratio: 1 / 1;
       translate: -50% -50%;
       border-radius: 0;
       transform-origin: 50% 50%;
-      background: var(--glow-gradient);
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        #ff8032 0%,
+        #ff8032 10%,
+        #ffe368 20%,
+        #d4e589 30%,
+        #64e8de 42%,
+        #94c8ff 54%,
+        #9baaf8 62%,
+        #b476ff 74%,
+        #dc58e1 86%,
+        #ff4649 96%,
+        #ff8032 100%
+      );
       animation: glow-spin 6.4s linear infinite;
       animation-play-state: var(--glow-motion-state, paused);
       will-change: transform;
     }
 
-    .edge-glow-ring::after {
-      content: "";
-      position: absolute;
-      inset: calc(-1 * var(--ring-spread, 4px));
-      border-radius: inherit;
-      padding: inherit;
-      background: var(--glow-gradient);
+    .edge-glow-color--l4 {
+      mix-blend-mode: screen;
+    }
+
+    @supports (mix-blend-mode: plus-lighter) {
+      .edge-glow-color--l4 {
+        mix-blend-mode: plus-lighter;
+      }
+    }
+
+    .edge-glow-fo {
+      opacity: 0;
+      transform-origin: 50% 100%;
+    }
+
+    .figma-outline {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 32px;
+      opacity: 0;
+      padding: var(--ring-width, 14px);
+      transition: opacity 920ms var(--entry-curve);
       -webkit-mask:
         linear-gradient(#fff 0 0) content-box,
         linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
-      mask:
-        linear-gradient(#fff 0 0) content-box,
-        linear-gradient(#fff 0 0);
       mask-composite: exclude;
-      opacity: var(--ring-soft-opacity, 0.32);
-      filter: blur(var(--ring-soft-blur, 12px)) saturate(1.08) brightness(1.08);
-      pointer-events: none;
+      will-change: opacity;
     }
 
-    .edge-glow-ring--l4 {
-      --ring-width: 22px;
-      --ring-spread: 9px;
-      --ring-soft-blur: 20px;
-      --ring-soft-opacity: 0.34;
-      filter: brightness(1.18) saturate(1.18);
+    .figma-outline::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      height: 184%;
+      aspect-ratio: 1 / 1;
+      translate: -50% -50%;
+      border-radius: 0;
+      transform-origin: 50% 50%;
+      animation: glow-spin 6.4s linear infinite;
+      animation-play-state: var(--glow-motion-state, paused);
+      will-change: transform;
     }
 
-    .edge-glow-ring--l2 {
-      --ring-width: 9px;
-      --ring-spread: 4px;
-      --ring-soft-blur: 8px;
-      --ring-soft-opacity: 0.24;
-      filter: brightness(1.14) saturate(1.08);
+    .figma-outline-main {
+      display: none;
+      opacity: 0;
+      --ring-width: 12px;
+      --glow-motion-state: paused;
     }
 
-    .edge-glow-ring--main {
-      --ring-width: 14px;
-      --ring-spread: 6px;
-      --ring-soft-blur: 12px;
-      --ring-soft-opacity: 0.3;
-      filter: brightness(1.2) saturate(1.12);
+    .figma-outline-soft,
+    .figma-outline-core {
+      display: none;
+    }
+
+    .figma-outline-main::before {
+      background: conic-gradient(
+          from 0deg at 50% 50%,
+          #ff8032 0%,
+          #ff8032 10%,
+          #ffe368 20%,
+          #d4e589 30%,
+          #64e8de 42%,
+          #94c8ff 54%,
+          #9baaf8 62%,
+          #b476ff 74%,
+          #dc58e1 86%,
+          #ff4649 96%,
+          #ff8032 100%
+        );
+      filter: saturate(1.24) brightness(1.12) contrast(1.08);
+      animation-duration: 6.4s;
     }
 
     .edge-glow-fallback {
@@ -416,21 +423,21 @@
       --fallback-blur: 24px;
       --fallback-opacity: 0.82;
       background:
-        linear-gradient(180deg, rgba(255, 227, 104, 0.78) 0%, rgba(255, 227, 104, 0.24) 22%, transparent 34%),
-        linear-gradient(0deg, rgba(220, 88, 225, 0.82) 0%, rgba(220, 88, 225, 0.24) 20%, transparent 32%),
-        linear-gradient(90deg, rgba(100, 232, 222, 0.76) 0%, rgba(100, 232, 222, 0.22) 16%, transparent 28%),
-        linear-gradient(270deg, rgba(255, 128, 50, 0.82) 0%, rgba(255, 128, 50, 0.24) 16%, transparent 28%);
+        linear-gradient(180deg, rgba(255, 227, 104, 0.78) 0%, rgba(255, 227, 104, 0.22) 10%, transparent 18%),
+        linear-gradient(0deg, rgba(220, 88, 225, 0.82) 0%, rgba(220, 88, 225, 0.22) 10%, transparent 18%),
+        linear-gradient(90deg, rgba(100, 232, 222, 0.76) 0%, rgba(100, 232, 222, 0.2) 8%, transparent 15%),
+        linear-gradient(270deg, rgba(255, 128, 50, 0.82) 0%, rgba(255, 128, 50, 0.22) 8%, transparent 15%);
     }
 
     .edge-glow-fallback-layer--inner {
-      inset: 10px;
+      inset: 18px;
       --fallback-blur: 12px;
       --fallback-opacity: 0.68;
       background:
-        linear-gradient(180deg, rgba(212, 229, 137, 0.64) 0%, transparent 24%),
-        linear-gradient(0deg, rgba(180, 118, 255, 0.7) 0%, transparent 24%),
-        linear-gradient(90deg, rgba(148, 200, 255, 0.62) 0%, transparent 18%),
-        linear-gradient(270deg, rgba(255, 70, 73, 0.66) 0%, transparent 18%);
+        linear-gradient(180deg, rgba(212, 229, 137, 0.64) 0%, transparent 12%),
+        linear-gradient(0deg, rgba(180, 118, 255, 0.7) 0%, transparent 12%),
+        linear-gradient(90deg, rgba(148, 200, 255, 0.62) 0%, transparent 10%),
+        linear-gradient(270deg, rgba(255, 70, 73, 0.66) 0%, transparent 10%);
       animation-duration: 4.8s;
       animation-delay: -1.1s;
     }
@@ -1077,7 +1084,7 @@
         z-index: 8;
       }
 
-      .edge-glow-rings {
+      .edge-glow-svg {
         display: none;
       }
 
@@ -1132,16 +1139,25 @@
       animation: glow-entry 920ms var(--entry-curve) forwards;
     }
 
-    .demo-app.is-playing .edge-glow-soft,
-    .demo-app.is-finished .edge-glow-soft,
     .demo-app.is-playing .edge-glow-fallback,
     .demo-app.is-finished .edge-glow-fallback {
       opacity: 1;
     }
 
-    .demo-app.is-playing .edge-glow-ring,
-    .demo-app.is-finished .edge-glow-ring {
+    .demo-app.is-playing .edge-glow-fo,
+    .demo-app.is-finished .edge-glow-fo {
       opacity: 1;
+    }
+
+    .demo-app.is-playing .edge-glow-stack,
+    .demo-app.is-finished .edge-glow-stack {
+      opacity: 1;
+    }
+
+    .demo-app.is-playing .figma-outline-main,
+    .demo-app.is-finished .figma-outline-main {
+      opacity: 1;
+      --glow-motion-state: running;
     }
 
     .demo-app.is-playing .ambient-trace,
@@ -1263,15 +1279,51 @@
             <img class="screen-bg" src="./assets/chuchang-3-bg.png" alt="短视频页面背景">
             <div class="screen-vignette"></div>
             <div class="edge-glow" aria-hidden="true">
-              <div class="edge-glow-soft">
-                <div class="edge-glow-soft-layer edge-glow-soft-layer--outer"></div>
-                <div class="edge-glow-soft-layer edge-glow-soft-layer--inner"></div>
-              </div>
-              <div class="edge-glow-rings">
-                <div class="edge-glow-ring edge-glow-ring--l4"></div>
-                <div class="edge-glow-ring edge-glow-ring--l2"></div>
-                <div class="edge-glow-ring edge-glow-ring--main"></div>
-              </div>
+              <svg class="edge-glow-svg" viewBox="0 0 375 812" preserveAspectRatio="none">
+                <defs>
+                  <filter id="ringMaskL2Blur" x="-6%" y="-6%" width="112%" height="112%">
+                    <feGaussianBlur stdDeviation="3"></feGaussianBlur>
+                  </filter>
+                  <filter id="ringMaskL4Blur" x="-18%" y="-18%" width="136%" height="136%">
+                    <feGaussianBlur stdDeviation="16"></feGaussianBlur>
+                  </filter>
+                  <mask id="ringMaskL2" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="812">
+                    <rect x="0" y="0" width="375" height="812" rx="32" fill="white"></rect>
+                    <g filter="url(#ringMaskL2Blur)">
+                      <rect x="2" y="2" width="371" height="808" rx="34" fill="black"></rect>
+                    </g>
+                  </mask>
+                  <mask id="ringMaskL4" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="812">
+                    <rect x="0" y="0" width="375" height="812" rx="32" fill="white"></rect>
+                    <g filter="url(#ringMaskL4Blur)">
+                      <rect x="-2" y="-2" width="379" height="816" rx="34" fill="black"></rect>
+                    </g>
+                  </mask>
+                  <filter id="ringMaskMainBlur" x="-14%" y="-14%" width="128%" height="128%">
+                    <feGaussianBlur stdDeviation="11"></feGaussianBlur>
+                  </filter>
+                  <filter id="glowBlurMain" x="-14%" y="-14%" width="128%" height="128%">
+                    <feGaussianBlur stdDeviation="10"></feGaussianBlur>
+                  </filter>
+                  <mask id="ringMaskMain" maskUnits="userSpaceOnUse" x="0" y="0" width="375" height="812">
+                    <rect x="0" y="0" width="375" height="812" rx="32" fill="white"></rect>
+                    <g filter="url(#ringMaskMainBlur)">
+                      <rect x="13" y="13" width="349" height="786" rx="27" fill="black"></rect>
+                    </g>
+                  </mask>
+                </defs>
+                <g class="edge-glow-stack">
+                  <foreignObject class="edge-glow-layer edge-glow-layer--l4" x="0" y="0" width="375" height="812" mask="url(#ringMaskL4)">
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="edge-glow-color edge-glow-color--l4"></div>
+                  </foreignObject>
+                  <foreignObject class="edge-glow-layer edge-glow-layer--l2" x="0" y="0" width="375" height="812" mask="url(#ringMaskL2)">
+                    <div xmlns="http://www.w3.org/1999/xhtml" class="edge-glow-color edge-glow-color--l2"></div>
+                  </foreignObject>
+                </g>
+                <foreignObject class="edge-glow-fo edge-glow-fo--main" x="0" y="0" width="375" height="812" mask="url(#ringMaskMain)" filter="url(#glowBlurMain)">
+                  <div xmlns="http://www.w3.org/1999/xhtml" class="figma-outline figma-outline-main"></div>
+                </foreignObject>
+              </svg>
               <div class="edge-glow-fallback">
                 <div class="edge-glow-fallback-layer edge-glow-fallback-layer--outer"></div>
                 <div class="edge-glow-fallback-layer edge-glow-fallback-layer--inner"></div>
