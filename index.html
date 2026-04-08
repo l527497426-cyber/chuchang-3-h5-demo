@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>出场-3 交互 H5</title>
+  <title>出场-3 动效 Demo</title>
   <style>
     @property --glow-angle {
       syntax: "<angle>";
@@ -47,20 +47,6 @@
       --shadow-phone: 0 36px 90px rgba(0, 0, 0, 0.46);
       --shadow-card: 0 13px 30px rgba(0, 0, 0, 0.16);
       --glow-reveal-duration: 980ms;
-      --glow-gradient: conic-gradient(
-        from 0deg at 50% 50%,
-        #ff8032 0%,
-        #ff8032 10%,
-        #ffe368 20%,
-        #d4e589 30%,
-        #64e8de 42%,
-        #94c8ff 54%,
-        #9baaf8 62%,
-        #b476ff 74%,
-        #dc58e1 86%,
-        #ff4649 96%,
-        #ff8032 100%
-      );
     }
 
     * {
@@ -78,8 +64,6 @@
       color: var(--text);
       font-family: "SF Pro Display", "PingFang SC", "Helvetica Neue", sans-serif;
       background: #000;
-      overscroll-behavior: none;
-      touch-action: manipulation;
     }
 
     body::before,
@@ -398,48 +382,8 @@
       animation-duration: 6.4s;
     }
 
-    .edge-glow-fallback {
-      display: none;
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      overflow: hidden;
-      opacity: 0;
-      transition: opacity 920ms var(--entry-curve);
-      pointer-events: none;
-    }
-
-    .edge-glow-fallback-layer {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      filter: blur(var(--fallback-blur, 18px)) saturate(1.08);
-      opacity: var(--fallback-opacity, 0.72);
-      animation: fallback-glow-pulse 5.6s ease-in-out infinite;
-      will-change: opacity, filter;
-    }
-
-    .edge-glow-fallback-layer--outer {
-      --fallback-blur: 24px;
-      --fallback-opacity: 0.82;
-      background:
-        linear-gradient(180deg, rgba(255, 227, 104, 0.78) 0%, rgba(255, 227, 104, 0.22) 10%, transparent 18%),
-        linear-gradient(0deg, rgba(220, 88, 225, 0.82) 0%, rgba(220, 88, 225, 0.22) 10%, transparent 18%),
-        linear-gradient(90deg, rgba(100, 232, 222, 0.76) 0%, rgba(100, 232, 222, 0.2) 8%, transparent 15%),
-        linear-gradient(270deg, rgba(255, 128, 50, 0.82) 0%, rgba(255, 128, 50, 0.22) 8%, transparent 15%);
-    }
-
-    .edge-glow-fallback-layer--inner {
-      inset: 18px;
-      --fallback-blur: 12px;
-      --fallback-opacity: 0.68;
-      background:
-        linear-gradient(180deg, rgba(212, 229, 137, 0.64) 0%, transparent 12%),
-        linear-gradient(0deg, rgba(180, 118, 255, 0.7) 0%, transparent 12%),
-        linear-gradient(90deg, rgba(148, 200, 255, 0.62) 0%, transparent 10%),
-        linear-gradient(270deg, rgba(255, 70, 73, 0.66) 0%, transparent 10%);
-      animation-duration: 4.8s;
-      animation-delay: -1.1s;
+    .figma-outline-core::before {
+      background: none;
     }
 
     .glow-seed {
@@ -501,27 +445,23 @@
       box-shadow: var(--shadow-card);
       transform: translateY(120%) scale(0.98);
       transform-origin: center bottom;
-      translate: 0 0;
       opacity: 0;
       filter: blur(22px);
       z-index: 4;
-      will-change: translate, width, height, border-radius, transform, opacity, filter;
+      will-change: left, top, width, height, border-radius, transform, opacity, filter;
       touch-action: none;
       cursor: grab;
       user-select: none;
       -webkit-user-select: none;
       -webkit-touch-callout: none;
       transition:
-        left 320ms var(--stage-curve),
-        top 320ms var(--stage-curve),
-        width 360ms var(--stage-curve),
-        height 360ms var(--stage-curve),
-        border-radius 360ms var(--stage-curve),
-        transform 360ms var(--stage-curve),
-        opacity 220ms ease,
-        filter 320ms ease,
-        box-shadow 360ms var(--stage-curve),
-        background 320ms ease;
+        left 220ms var(--entry-curve),
+        top 220ms var(--entry-curve),
+        width 220ms var(--entry-curve),
+        height 220ms var(--entry-curve),
+        border-radius 220ms var(--entry-curve),
+        opacity 180ms ease,
+        filter 220ms ease;
     }
 
     .review-card::before,
@@ -575,10 +515,8 @@
       cursor: grabbing;
     }
 
-    .review-card.is-dragging,
-    .review-card.is-flipping {
+    .review-card.is-dragging {
       transition: none;
-      will-change: translate;
     }
 
     .review-card,
@@ -761,8 +699,7 @@
     }
 
     .review-card.is-morphing-widget,
-    .review-card.is-morphing-sheet,
-    .review-card.is-morphing-panel {
+    .review-card.is-morphing-sheet {
       pointer-events: none;
     }
 
@@ -786,13 +723,6 @@
     .review-card.is-morphing-widget::before,
     .review-card.is-morphing-widget::after {
       opacity: 0;
-    }
-
-    .review-card.is-morphing-widget {
-      box-shadow:
-        0 16px 30px rgba(10, 10, 14, 0.16),
-        0 0 0 1px rgba(255, 255, 255, 0.42);
-      filter: saturate(1.04);
     }
 
     .widget-content {
@@ -833,13 +763,6 @@
     .review-card.is-morphing-panel .panel-content {
       opacity: 1;
       transition-delay: 70ms;
-    }
-
-    .review-card.is-morphing-panel {
-      box-shadow:
-        0 18px 42px rgba(0, 0, 0, 0.18),
-        0 0 0 1px rgba(255, 255, 255, 0.3);
-      filter: saturate(1.02);
     }
 
     .review-card.is-morphing-panel .review-content {
@@ -998,12 +921,6 @@
       transition-duration: 260ms;
     }
 
-    .review-card.is-morphing-sheet {
-      box-shadow:
-        0 14px 34px rgba(0, 0, 0, 0.17),
-        0 0 0 1px rgba(255, 255, 255, 0.28);
-    }
-
     .widget-handle {
       display: inline-flex;
       align-items: center;
@@ -1062,44 +979,6 @@
       transition: opacity 240ms ease, transform 240ms ease, background 200ms ease, box-shadow 200ms ease;
     }
 
-    @media (hover: none) and (pointer: coarse) {
-      .entry-screen,
-      .stage-screen {
-        padding: 18px 12px calc(18px + env(safe-area-inset-bottom));
-      }
-
-      .stage-layout {
-        gap: 12px;
-        min-height: 100%;
-        align-content: center;
-      }
-
-      .phone-wrap {
-        width: min(375px, calc(100vw - 24px));
-      }
-
-      .replay-button {
-        left: 50%;
-        top: auto;
-        bottom: calc(8px + env(safe-area-inset-bottom));
-        transform: translateX(-50%);
-        z-index: 8;
-      }
-
-      .edge-glow-svg {
-        display: none;
-      }
-
-      .edge-glow-fallback {
-        display: block;
-      }
-
-      .demo-app.is-playing .replay-button,
-      .demo-app.is-finished .replay-button {
-        transform: translateX(-50%);
-      }
-    }
-
     .replay-button:hover {
       background: rgba(255, 255, 255, 1);
       box-shadow:
@@ -1141,11 +1020,6 @@
       animation: glow-entry 920ms var(--entry-curve) forwards;
     }
 
-    .demo-app.is-playing .edge-glow-fallback,
-    .demo-app.is-finished .edge-glow-fallback {
-      opacity: 1;
-    }
-
     .demo-app.is-playing .edge-glow-fo,
     .demo-app.is-finished .edge-glow-fo {
       opacity: 1;
@@ -1160,6 +1034,11 @@
     .demo-app.is-finished .figma-outline-main {
       opacity: 1;
       --glow-motion-state: running;
+    }
+
+    .demo-app.is-playing .figma-outline-core,
+    .demo-app.is-finished .figma-outline-core {
+      opacity: 0;
     }
 
     .demo-app.is-playing .ambient-trace,
@@ -1230,16 +1109,6 @@
       100% {
         opacity: 1;
         --glow-reveal-radius: 860px;
-      }
-    }
-
-    @keyframes fallback-glow-pulse {
-      0%, 100% {
-        opacity: var(--fallback-opacity, 0.72);
-      }
-
-      50% {
-        opacity: calc(var(--fallback-opacity, 0.72) * 0.82);
       }
     }
 
@@ -1326,10 +1195,6 @@
                   <div xmlns="http://www.w3.org/1999/xhtml" class="figma-outline figma-outline-main"></div>
                 </foreignObject>
               </svg>
-              <div class="edge-glow-fallback">
-                <div class="edge-glow-fallback-layer edge-glow-fallback-layer--outer"></div>
-                <div class="edge-glow-fallback-layer edge-glow-fallback-layer--inner"></div>
-              </div>
               <div class="glow-seed"></div>
             </div>
 
@@ -1548,7 +1413,6 @@
     const tracePaths = Array.from(document.querySelectorAll('.trace'));
     let finishTimer = null;
     let morphTimer = null;
-    let morphAnimation = null;
     let dragState = null;
 
     const cardSpec = {
@@ -1573,7 +1437,7 @@
       radius: 26,
       sideInset: 12,
       threshold: 0.56,
-      morphDelay: 210,
+      morphDelay: 160,
     };
 
     const panelThreshold = 86;
@@ -1624,55 +1488,9 @@
       reviewCard.style.width = `${width}px`;
       reviewCard.style.height = `${height}px`;
       reviewCard.style.borderRadius = `${radius}px`;
-      reviewCard.style.translate = '0 0';
       reviewCard.style.transform = 'none';
       reviewCard.style.opacity = '1';
       reviewCard.style.filter = 'none';
-    }
-
-    function playMorphAnimation(keyframes, duration = 320) {
-      morphAnimation?.cancel();
-      morphAnimation = reviewCard.animate(keyframes, {
-        duration,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        fill: 'none',
-      });
-    }
-
-    function getCurrentCardFrame() {
-      return {
-        left: parseFloat(reviewCard.style.left || (reviewCard.classList.contains('is-panel') ? panelSpec.left : cardSpec.left)),
-        top: parseFloat(reviewCard.style.top || (reviewCard.classList.contains('is-panel') ? panelSpec.top : cardSpec.top)),
-        width: parseFloat(reviewCard.style.width || (reviewCard.classList.contains('is-widget') ? widgetSpec.width : (reviewCard.classList.contains('is-panel') ? panelSpec.width : cardSpec.width))),
-        height: parseFloat(reviewCard.style.height || (reviewCard.classList.contains('is-widget') ? widgetSpec.height : (reviewCard.classList.contains('is-panel') ? panelSpec.height : cardSpec.height))),
-        radius: parseFloat(reviewCard.style.borderRadius || (reviewCard.classList.contains('is-widget') ? widgetSpec.radius : (reviewCard.classList.contains('is-panel') ? panelSpec.radius : cardSpec.radius))),
-      };
-    }
-
-    function commitDraggedFrame(left, top) {
-      reviewCard.classList.add('is-dragging');
-      reviewCard.style.left = `${left}px`;
-      reviewCard.style.top = `${top}px`;
-      reviewCard.style.translate = '0 0';
-      void reviewCard.offsetWidth;
-    }
-
-    function morphCardTo(targetFrame) {
-      const from = getCurrentCardFrame();
-      morphAnimation?.cancel();
-      reviewCard.classList.add('is-flipping');
-      applyCardFrame(targetFrame);
-      const deltaX = from.left - targetFrame.left;
-      const deltaY = from.top - targetFrame.top;
-      const scaleX = from.width / targetFrame.width;
-      const scaleY = from.height / targetFrame.height;
-      reviewCard.style.transformOrigin = 'top left';
-      reviewCard.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(${scaleX}, ${scaleY})`;
-      void reviewCard.offsetWidth;
-      reviewCard.classList.remove('is-dragging', 'is-flipping');
-      requestAnimationFrame(() => {
-        reviewCard.style.transform = 'none';
-      });
     }
 
     function startMorphToWidget(side, top) {
@@ -1683,7 +1501,7 @@
       reviewCard.dataset.widgetSide = side;
       reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet', 'is-morphing-panel');
       reviewCard.classList.add('is-morphing-widget');
-      morphCardTo({
+      applyCardFrame({
         left: widgetLeft,
         top: widgetTop,
         width: widgetSpec.width,
@@ -1694,31 +1512,28 @@
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-morphing-widget');
         reviewCard.classList.add('is-widget');
-        reviewCard.style.transformOrigin = 'center center';
       }, widgetSpec.morphDelay);
     }
 
     function startMorphToSheet() {
       reviewCard.classList.remove('is-morphing-widget', 'is-morphing-panel');
       reviewCard.classList.add('is-morphing-sheet');
-      morphCardTo(cardSpec);
+      applyCardFrame(cardSpec);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet');
         widgetContent.classList.remove('is-left');
-        reviewCard.style.transformOrigin = 'center center';
       }, widgetSpec.morphDelay);
     }
 
     function startMorphToPanel() {
       reviewCard.classList.remove('is-widget', 'is-panel', 'is-morphing-sheet', 'is-morphing-widget');
       reviewCard.classList.add('is-morphing-panel');
-      morphCardTo(panelSpec);
+      applyCardFrame(panelSpec);
       window.clearTimeout(morphTimer);
       morphTimer = window.setTimeout(() => {
         reviewCard.classList.remove('is-morphing-panel');
         reviewCard.classList.add('is-panel');
-        reviewCard.style.transformOrigin = 'center center';
       }, widgetSpec.morphDelay);
     }
 
@@ -1734,7 +1549,6 @@
       reviewCard.style.width = '';
       reviewCard.style.height = '';
       reviewCard.style.borderRadius = '';
-      reviewCard.style.translate = '';
       reviewCard.style.transform = '';
       reviewCard.style.opacity = '';
       reviewCard.style.filter = '';
@@ -1753,7 +1567,6 @@
     function resetDemo() {
       window.clearTimeout(finishTimer);
       window.clearTimeout(morphTimer);
-      morphAnimation?.cancel();
       demoApp.classList.remove('is-started', 'is-playing', 'is-finished');
       resetDockState();
       tracePaths.forEach((path) => {
@@ -1783,28 +1596,28 @@
       if (!dragState) return;
       dragState.lastX = event.clientX;
       dragState.lastY = event.clientY;
-      dragState.deltaX = event.clientX - dragState.startX;
-      dragState.deltaY = event.clientY - dragState.startY;
       demoApp.classList.add('is-dragging');
       setGlobalCursor('grabbing');
       reviewCard.classList.add('is-dragging');
-      reviewCard.style.translate = `${dragState.deltaX}px ${dragState.deltaY}px`;
+      const nextLeft = dragState.originLeft + (event.clientX - dragState.startX);
+      const nextTop = dragState.originTop + (event.clientY - dragState.startY);
+      reviewCard.style.left = `${nextLeft}px`;
+      reviewCard.style.top = `${nextTop}px`;
     }
 
     function onDragEnd(event) {
       if (!dragState) return;
       const phoneRect = phone.getBoundingClientRect();
-      const pointerClientX = typeof event?.clientX === 'number' ? event.clientX : dragState.lastX;
-      const pointerClientY = typeof event?.clientY === 'number' ? event.clientY : dragState.lastY;
-      const deltaX = typeof dragState.deltaX === 'number' ? dragState.deltaX : (pointerClientX - dragState.startX);
-      const deltaY = typeof dragState.deltaY === 'number' ? dragState.deltaY : (pointerClientY - dragState.startY);
-      const currentLeft = dragState.originLeft + deltaX;
-      const currentTop = dragState.originTop + deltaY;
+      const currentLeft = parseFloat(reviewCard.style.left || cardSpec.left);
+      const currentTop = parseFloat(reviewCard.style.top || (reviewCard.classList.contains('is-panel') ? panelSpec.top : cardSpec.top));
       const currentWidth = reviewCard.classList.contains('is-widget') ? widgetSpec.width : (reviewCard.classList.contains('is-panel') ? panelSpec.width : cardSpec.width);
       const currentHeight = reviewCard.classList.contains('is-widget') ? widgetSpec.height : (reviewCard.classList.contains('is-panel') ? panelSpec.height : cardSpec.height);
       const localCenterX = currentLeft + currentWidth / 2;
       const localCenterY = currentTop + currentHeight / 2;
-      commitDraggedFrame(currentLeft, currentTop);
+      const pointerClientX = typeof event?.clientX === 'number' ? event.clientX : dragState.lastX;
+      const pointerClientY = typeof event?.clientY === 'number' ? event.clientY : dragState.lastY;
+      const deltaX = pointerClientX - dragState.startX;
+      const deltaY = pointerClientY - dragState.startY;
 
       if (dragState.mode === 'restore') {
         const inRestoreZone =
@@ -1889,8 +1702,6 @@
         startY: event.clientY,
         lastX: event.clientX,
         lastY: event.clientY,
-        deltaX: 0,
-        deltaY: 0,
         originLeft: parseFloat(reviewCard.style.left || (reviewCard.classList.contains('is-panel') ? panelSpec.left : cardSpec.left)),
         originTop: parseFloat(reviewCard.style.top || (reviewCard.classList.contains('is-panel') ? panelSpec.top : cardSpec.top)),
       };
