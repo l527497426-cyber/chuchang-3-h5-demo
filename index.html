@@ -265,7 +265,6 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      overflow: hidden;
       opacity: 0;
       padding: var(--ring-width, 10px);
       transition: opacity 920ms var(--entry-curve), filter 920ms var(--entry-curve);
@@ -309,19 +308,45 @@
       will-change: transform;
     }
 
+    .edge-glow-ring::after {
+      content: "";
+      position: absolute;
+      inset: -8%;
+      border-radius: inherit;
+      padding: inherit;
+      opacity: var(--ring-soft-opacity, 0.32);
+      background: inherit;
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      filter: blur(var(--ring-soft-blur, 12px)) saturate(1.08) brightness(1.08);
+      pointer-events: none;
+    }
+
     .edge-glow-ring--l4 {
       --ring-width: 22px;
-      filter: blur(18px) brightness(1.16) saturate(1.18);
+      --ring-soft-blur: 20px;
+      --ring-soft-opacity: 0.42;
+      filter: brightness(1.18) saturate(1.18);
     }
 
     .edge-glow-ring--l2 {
       --ring-width: 9px;
-      filter: blur(5px) brightness(1.14) saturate(1.08);
+      --ring-soft-blur: 8px;
+      --ring-soft-opacity: 0.26;
+      filter: brightness(1.14) saturate(1.08);
     }
 
     .edge-glow-ring--main {
       --ring-width: 14px;
-      filter: blur(10px) brightness(1.2) saturate(1.12);
+      --ring-soft-blur: 12px;
+      --ring-soft-opacity: 0.34;
+      filter: brightness(1.2) saturate(1.12);
     }
 
     .glow-seed {
@@ -383,10 +408,11 @@
       box-shadow: var(--shadow-card);
       transform: translateY(120%) scale(0.98);
       transform-origin: center bottom;
+      translate: 0 0;
       opacity: 0;
       filter: blur(22px);
       z-index: 4;
-      will-change: left, top, width, height, border-radius, transform, opacity, filter;
+      will-change: translate, width, height, border-radius, transform, opacity, filter;
       touch-action: none;
       cursor: grab;
       user-select: none;
@@ -457,6 +483,7 @@
 
     .review-card.is-dragging {
       transition: none;
+      will-change: translate;
     }
 
     .review-card,
@@ -1424,6 +1451,7 @@
       reviewCard.style.width = `${width}px`;
       reviewCard.style.height = `${height}px`;
       reviewCard.style.borderRadius = `${radius}px`;
+      reviewCard.style.translate = '0 0';
       reviewCard.style.transform = 'none';
       reviewCard.style.opacity = '1';
       reviewCard.style.filter = 'none';
@@ -1509,6 +1537,7 @@
       reviewCard.style.width = '';
       reviewCard.style.height = '';
       reviewCard.style.borderRadius = '';
+      reviewCard.style.translate = '';
       reviewCard.style.transform = '';
       reviewCard.style.opacity = '';
       reviewCard.style.filter = '';
@@ -1557,28 +1586,30 @@
       if (!dragState) return;
       dragState.lastX = event.clientX;
       dragState.lastY = event.clientY;
+      dragState.deltaX = event.clientX - dragState.startX;
+      dragState.deltaY = event.clientY - dragState.startY;
       demoApp.classList.add('is-dragging');
       setGlobalCursor('grabbing');
       reviewCard.classList.add('is-dragging');
-      const nextLeft = dragState.originLeft + (event.clientX - dragState.startX);
-      const nextTop = dragState.originTop + (event.clientY - dragState.startY);
-      reviewCard.style.left = `${nextLeft}px`;
-      reviewCard.style.top = `${nextTop}px`;
+      reviewCard.style.translate = `${dragState.deltaX}px ${dragState.deltaY}px`;
     }
 
     function onDragEnd(event) {
       if (!dragState) return;
       const phoneRect = phone.getBoundingClientRect();
-      const currentLeft = parseFloat(reviewCard.style.left || cardSpec.left);
-      const currentTop = parseFloat(reviewCard.style.top || (reviewCard.classList.contains('is-panel') ? panelSpec.top : cardSpec.top));
+      const pointerClientX = typeof event?.clientX === 'number' ? event.clientX : dragState.lastX;
+      const pointerClientY = typeof event?.clientY === 'number' ? event.clientY : dragState.lastY;
+      const deltaX = typeof dragState.deltaX === 'number' ? dragState.deltaX : (pointerClientX - dragState.startX);
+      const deltaY = typeof dragState.deltaY === 'number' ? dragState.deltaY : (pointerClientY - dragState.startY);
+      const currentLeft = dragState.originLeft + deltaX;
+      const currentTop = dragState.originTop + deltaY;
       const currentWidth = reviewCard.classList.contains('is-widget') ? widgetSpec.width : (reviewCard.classList.contains('is-panel') ? panelSpec.width : cardSpec.width);
       const currentHeight = reviewCard.classList.contains('is-widget') ? widgetSpec.height : (reviewCard.classList.contains('is-panel') ? panelSpec.height : cardSpec.height);
       const localCenterX = currentLeft + currentWidth / 2;
       const localCenterY = currentTop + currentHeight / 2;
-      const pointerClientX = typeof event?.clientX === 'number' ? event.clientX : dragState.lastX;
-      const pointerClientY = typeof event?.clientY === 'number' ? event.clientY : dragState.lastY;
-      const deltaX = pointerClientX - dragState.startX;
-      const deltaY = pointerClientY - dragState.startY;
+      reviewCard.style.left = `${currentLeft}px`;
+      reviewCard.style.top = `${currentTop}px`;
+      reviewCard.style.translate = '0 0';
 
       if (dragState.mode === 'restore') {
         const inRestoreZone =
@@ -1663,6 +1694,8 @@
         startY: event.clientY,
         lastX: event.clientX,
         lastY: event.clientY,
+        deltaX: 0,
+        deltaY: 0,
         originLeft: parseFloat(reviewCard.style.left || (reviewCard.classList.contains('is-panel') ? panelSpec.left : cardSpec.left)),
         originTop: parseFloat(reviewCard.style.top || (reviewCard.classList.contains('is-panel') ? panelSpec.top : cardSpec.top)),
       };
