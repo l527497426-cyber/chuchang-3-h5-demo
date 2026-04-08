@@ -279,36 +279,53 @@
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      border: var(--ring-width, 10px) solid transparent;
-      border-image: var(--glow-gradient) 1;
       opacity: 0;
-      transform-origin: 50% 50%;
-      animation: glow-spin 6.4s linear infinite;
-      animation-play-state: var(--glow-motion-state, paused);
+      padding: var(--ring-width, 10px);
       transition: opacity 920ms var(--entry-curve), filter 920ms var(--entry-curve);
-      will-change: opacity, filter, transform;
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      will-change: opacity, filter;
     }
 
     .edge-glow-ring::before {
       content: "";
       position: absolute;
-      inset: calc(-1 * var(--ring-spread, 4px));
-      border-radius: inherit;
-      border: inherit;
-      border-image: var(--glow-gradient) 1;
-      filter: blur(var(--ring-soft-blur, 12px)) saturate(1.08) brightness(1.08);
-      opacity: var(--ring-soft-opacity, 0.32);
-      pointer-events: none;
+      left: 50%;
+      top: 50%;
+      width: 212%;
+      aspect-ratio: 1 / 1;
+      translate: -50% -50%;
+      border-radius: 0;
+      transform-origin: 50% 50%;
+      background: var(--glow-gradient);
+      animation: glow-spin 6.4s linear infinite;
+      animation-play-state: var(--glow-motion-state, paused);
+      will-change: transform;
     }
 
     .edge-glow-ring::after {
       content: "";
       position: absolute;
-      inset: 0;
+      inset: calc(-1 * var(--ring-spread, 4px));
       border-radius: inherit;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      filter: blur(1.5px);
-      opacity: 0.38;
+      padding: inherit;
+      background: var(--glow-gradient);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      mask-composite: exclude;
+      opacity: var(--ring-soft-opacity, 0.32);
+      filter: blur(var(--ring-soft-blur, 12px)) saturate(1.08) brightness(1.08);
       pointer-events: none;
     }
 
@@ -334,6 +351,50 @@
       --ring-soft-blur: 12px;
       --ring-soft-opacity: 0.3;
       filter: brightness(1.2) saturate(1.12);
+    }
+
+    .edge-glow-fallback {
+      display: none;
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 920ms var(--entry-curve);
+      pointer-events: none;
+    }
+
+    .edge-glow-fallback-layer {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      filter: blur(var(--fallback-blur, 18px)) saturate(1.08);
+      opacity: var(--fallback-opacity, 0.72);
+      animation: fallback-glow-pulse 5.6s ease-in-out infinite;
+      will-change: opacity, filter;
+    }
+
+    .edge-glow-fallback-layer--outer {
+      --fallback-blur: 24px;
+      --fallback-opacity: 0.82;
+      background:
+        linear-gradient(180deg, rgba(255, 227, 104, 0.78) 0%, rgba(255, 227, 104, 0.24) 22%, transparent 34%),
+        linear-gradient(0deg, rgba(220, 88, 225, 0.82) 0%, rgba(220, 88, 225, 0.24) 20%, transparent 32%),
+        linear-gradient(90deg, rgba(100, 232, 222, 0.76) 0%, rgba(100, 232, 222, 0.22) 16%, transparent 28%),
+        linear-gradient(270deg, rgba(255, 128, 50, 0.82) 0%, rgba(255, 128, 50, 0.24) 16%, transparent 28%);
+    }
+
+    .edge-glow-fallback-layer--inner {
+      inset: 10px;
+      --fallback-blur: 12px;
+      --fallback-opacity: 0.68;
+      background:
+        linear-gradient(180deg, rgba(212, 229, 137, 0.64) 0%, transparent 24%),
+        linear-gradient(0deg, rgba(180, 118, 255, 0.7) 0%, transparent 24%),
+        linear-gradient(90deg, rgba(148, 200, 255, 0.62) 0%, transparent 18%),
+        linear-gradient(270deg, rgba(255, 70, 73, 0.66) 0%, transparent 18%);
+      animation-duration: 4.8s;
+      animation-delay: -1.1s;
     }
 
     .glow-seed {
@@ -978,6 +1039,14 @@
         z-index: 8;
       }
 
+      .edge-glow-rings {
+        display: none;
+      }
+
+      .edge-glow-fallback {
+        display: block;
+      }
+
       .demo-app.is-playing .replay-button,
       .demo-app.is-finished .replay-button {
         transform: translateX(-50%);
@@ -1101,6 +1170,16 @@
       }
     }
 
+    @keyframes fallback-glow-pulse {
+      0%, 100% {
+        opacity: var(--fallback-opacity, 0.72);
+      }
+
+      50% {
+        opacity: calc(var(--fallback-opacity, 0.72) * 0.82);
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation: none !important;
@@ -1143,6 +1222,10 @@
                 <div class="edge-glow-ring edge-glow-ring--l4"></div>
                 <div class="edge-glow-ring edge-glow-ring--l2"></div>
                 <div class="edge-glow-ring edge-glow-ring--main"></div>
+              </div>
+              <div class="edge-glow-fallback">
+                <div class="edge-glow-fallback-layer edge-glow-fallback-layer--outer"></div>
+                <div class="edge-glow-fallback-layer edge-glow-fallback-layer--inner"></div>
               </div>
               <div class="glow-seed"></div>
             </div>
